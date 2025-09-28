@@ -1,39 +1,48 @@
 import OpenAI from "openai";
+import { SYSTEM_PROMPT, validate } from "./common";
+import type { ResponseCreateParams } from "openai/resources/responses/responses.mjs";
 
 export default async function (req: Request) {
-  if (!process.env["OPENAI_API_KEY"]) {
-    return Response.json(
-      { error: "OPENAI_API_KEY is not set" },
-      { status: 500 },
-    );
-  }
+  const validatedRequest = await validate("OPENAI_API_KEY", req);
+  if (validatedRequest.error) return validatedRequest.error;
+  const { message, model } = validatedRequest;
 
-  const body = (await req.json().catch(() => null)) as {
-    message?: string;
-    model?: string;
-  } | null;
-  const input = body?.message || "This four-letter country borders Vietnam";
-  const model = body?.model || "gpt-4o-mini";
-
-  const client = new OpenAI();
-  const response = await client.chat.completions.create({
+  const params: ResponseCreateParams = {
     model,
-    messages: [
+    input: [
       {
         role: "system",
-        content:
-          "You are a Jeopardy! contestant. Answer in the form of a question.",
+        content: SYSTEM_PROMPT,
       },
       {
         role: "user",
-        content: input,
+        content: message,
       },
     ],
-  });
+  };
+  minimizeReasoning(model, params);
 
-  return Response.json({ answer: response.choices[0].message.content });
+  console.log("Making OpenAI request:", params);
+  const client = new OpenAI();
+  const response = await client.responses.create(params);
+  
+  return Response.json({
+    answer: response.output_text,
+    details: { reasoning: params.reasoning },
+  });
 }
 
 export const config = {
-  path: "/openai",
+  path: "/api/openai",
 };
+
+function minimizeReasoning(model: string, params: ResponseCreateParams) {
+  const supportsReasoning = /gpt-5|codex|o3|o4/.test(model);
+  if (supportsReasoning) {
+    const canDisable = !/codex|o3|o4/.test(model);
+    console.log(
+      `minimizeReasoning: ${model} supports reasoning, canDisable: ${canDisable}`
+    );
+    params.reasoning = { effort: canDisable ? "minimal" : "low" };
+  }
+}

@@ -1,33 +1,52 @@
-import { GoogleGenAI } from "@google/genai";
+import {
+  GoogleGenAI,
+  GenerateContentParameters,
+  GenerateContentConfig,
+} from "@google/genai";
+import { SYSTEM_PROMPT, validate } from "./common";
 
 export default async function (req: Request) {
-  if (!process.env["GEMINI_API_KEY"]) {
-    return Response.json(
-      { error: "GEMINI_API_KEY is not set" },
-      { status: 500 },
-    );
-  }
+  const validatedRequest = await validate("GEMINI_API_KEY", req);
+  if (validatedRequest.error) return validatedRequest.error;
+  const { message, model } = validatedRequest;
 
-  const body = (await req.json().catch(() => null)) as {
-    message?: string;
-    model?: string;
-  } | null;
-  const input = body?.message || "This four-letter country borders Vietnam";
-  const model = body?.model || "gemini-2.5-flash";
-
-  const genAI = new GoogleGenAI({ apiKey: process.env["GEMINI_API_KEY"] });
-  const response = await genAI.models.generateContent({
+  const params: GenerateContentParameters = {
     model,
-    contents: input,
+    contents: message,
     config: {
-      systemInstruction:
-        "You are a Jeopardy! contestant. Answer in the form of a question.",
+      systemInstruction: SYSTEM_PROMPT,
     },
-  });
+  };
+  minimizeThinking(model, params.config!);
 
-  return Response.json({ answer: response.text });
+  console.log("Making Gemini request:", params);
+  const genAI = new GoogleGenAI({});
+  const response = await genAI.models.generateContent(params);
+
+  return Response.json({
+    answer: response.text,
+    details: { thinking: params.config?.thinkingConfig },
+  });
 }
 
 export const config = {
-  path: "/gemini",
+  path: "/api/gemini",
 };
+
+function minimizeThinking(model: string, config: GenerateContentConfig) {
+  const GEMINI_PRO_MIN_THINKING = 128;
+
+  const supportsThinking =
+    (model.includes("2.5") || model.includes("latest")) &&
+    !model.includes("image");
+
+  if (supportsThinking) {
+    const canDisable = !model.includes("pro");
+    console.log(
+      `minimizeThinking: ${model} supports thinking, canDisable: ${canDisable}`
+    );
+    config.thinkingConfig = {
+      thinkingBudget: canDisable ? 0 : GEMINI_PRO_MIN_THINKING,
+    };
+  }
+}

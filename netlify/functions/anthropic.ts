@@ -1,40 +1,40 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { SYSTEM_PROMPT, validate } from "./common";
+import { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages.mjs";
+
+const MAX_OUTPUT_TOKENS = 16; // Anthropic requires max tokens (and tends to be chatty)
 
 export default async function (req: Request) {
-  if (!process.env["ANTHROPIC_API_KEY"]) {
-    return Response.json(
-      { error: "ANTHROPIC_API_KEY is not set" },
-      { status: 500 },
-    );
-  }
+  const validatedRequest = await validate("ANTHROPIC_API_KEY", req);
+  if (validatedRequest.error) return validatedRequest.error;
 
-  const body = (await req.json().catch(() => null)) as {
-    message?: string;
-    model?: string;
-  } | null;
-  const input = body?.message || "This four-letter country borders Vietnam";
-  const model = body?.model || "claude-3-5-haiku-20241022";
-  console.log("Making Anthropic request", {
-    model: "claude-3-5-haiku-20241022",
-    input,
-  });
+  const { message, model } = validatedRequest;
+  console.log("Making Anthropic request", { model, message });
 
   const anthropic = new Anthropic();
-  const response = await anthropic.messages.create({
+  const params: MessageCreateParamsNonStreaming = {
     model,
-    max_tokens: 1024,
-    system: "You are a Jeopardy! contestant. Answer in the form of a question.",
+    system: SYSTEM_PROMPT,
     messages: [
       {
         role: "user",
-        content: input,
+        content: message,
       },
     ],
-  });
+    max_tokens: MAX_OUTPUT_TOKENS,
+  };
 
-  return Response.json({ answer: response.content[0].text });
+  console.log("Making Anthropic request:", params);
+  const response = await anthropic.messages.create(params);
+
+  if (response.content[0].type === "text") {
+    return Response.json({ answer: response.content[0].text, details: { maxTokens: MAX_OUTPUT_TOKENS } });
+  } else {
+    console.error("Unexpected model content:", response.content);
+    return Response.json({ error: "Unexpcted content" }, { status: 500 });
+  }
 }
 
 export const config = {
-  path: "/anthropic",
+  path: "/api/anthropic",
 };

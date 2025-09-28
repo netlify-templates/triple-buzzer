@@ -1,538 +1,543 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triple Jeopardy!</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .chat-container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 1200px;
-      height: min(90vh, 800px);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .chat-header {
-      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-      color: #ffd700;
-      padding: 20px;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      letter-spacing: 1px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .message {
-      display: flex;
-      margin-bottom: 15px;
-    }
-
-    .message.user {
-      justify-content: flex-end;
-    }
-
-    .message.assistant {
-      justify-content: flex-start;
-    }
-
-    .message-content {
-      max-width: 80%;
-      padding: 12px 18px;
-      border-radius: 18px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      position: relative;
-    }
-
-    .message.user .message-content {
-      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-      color: #ffd700;
-      border-bottom-right-radius: 5px;
-      font-weight: 600;
-    }
-
-    .message.assistant .message-content {
-      background: #f1f3f5;
-      color: #333;
-      border-bottom-left-radius: 5px;
-      position: relative;
-    }
-
-    .backend-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-      color: #ffd700;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 8px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .backend-badge.ai-sdk {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    }
-
-    .backend-badge.anthropic {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-
-    .backend-badge.gemini {
-      background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
-    }
-
-    .chat-input-container {
-      padding: 20px;
-      border-top: 1px solid #e9ecef;
-      background: #f8f9fa;
-    }
-
-    .backend-selector {
-      margin-bottom: 15px;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .backend-selector label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .backend-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .backend-option {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 12px;
-      border: 2px solid #e9ecef;
-      border-radius: 15px;
-      background: white;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .backend-checkbox {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .model-selector {
-      display: none;
-      margin-top: 5px;
-    }
-
-    .backend-option.selected .model-selector {
-      display: block;
-    }
-
-    .model-selector select {
-      width: 100%;
-      padding: 4px 8px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      background: white;
-    }
-
-    .backend-option:hover {
-      border-color: #1a237e;
-    }
-
-    .backend-option input[type="checkbox"] {
-      margin: 0;
-    }
-
-    .backend-option.selected {
-      background: #1a237e;
-      color: #ffd700;
-      border-color: #1a237e;
-    }
-
-    .chat-input {
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 12px 18px;
-      border: 2px solid #e9ecef;
-      border-radius: 25px;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .chat-input input:focus {
-      border-color: #1a237e;
-    }
-
-    .chat-input button {
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-      color: #ffd700;
-      border: none;
-      border-radius: 25px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition:
-        transform 0.2s,
-        box-shadow 0.2s;
-    }
-
-    .chat-input button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(26, 35, 126, 0.4);
-    }
-
-    .chat-input button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .typing-indicator {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      color: #666;
-      font-style: italic;
-      margin-bottom: 15px;
-      padding-left: 20px;
-    }
-
-    .typing-dots {
-      display: flex;
-      gap: 4px;
-    }
-
-    .typing-dots span {
-      width: 8px;
-      height: 8px;
-      background: #1a237e;
-      border-radius: 50%;
-      animation: typing 1.4s infinite;
-    }
-
-    .typing-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-
-      0%,
-      60%,
-      100% {
-        transform: translateY(0);
-        opacity: 0.3;
-      }
-
-      30% {
-        transform: translateY(-10px);
-        opacity: 1;
-      }
-    }
-
-    .error-message {
-      background: #ff6b6b;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .welcome-message {
-      text-align: center;
-      color: #666;
-      padding: 40px 20px;
-      font-style: italic;
-    }
-
-    .welcome-subtitle {
-      text-align: center;
-      color: #888;
-      padding: 0 20px 20px;
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-
-    @media (min-width: 1400px) {
-      .chat-container {
-        max-width: 1400px;
-        height: min(85vh, 900px);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .chat-container {
-        height: 100vh;
-        border-radius: 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triple Buzzer!</title>
+    <style>
+      * {
         margin: 0;
-        max-width: 100%;
+        padding: 0;
+        box-sizing: border-box;
       }
 
       body {
-        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #1a227ee9 0%, #3949ab 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
       }
 
-      .backend-options {
+      .chat-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 1200px;
+        height: min(90vh, 800px);
+        display: flex;
         flex-direction: column;
-        gap: 8px;
+        overflow: hidden;
       }
 
-      .backend-option {
+      .chat-header {
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+        color: #ffd700;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 1px;
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .message {
+        display: flex;
+        margin-bottom: 15px;
+      }
+
+      .message.user {
+        justify-content: flex-end;
+      }
+
+      .message.assistant {
         justify-content: flex-start;
       }
 
-      .chat-header {
-        font-size: 1.4rem;
-        padding: 15px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .chat-header {
-        font-size: 1.2rem;
-        padding: 12px;
-      }
-
       .message-content {
-        max-width: 90%;
-        font-size: 0.9rem;
+        max-width: 80%;
+        padding: 12px 18px;
+        border-radius: 9px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        position: relative;
+      }
+
+      .message.user .message-content {
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+        color: #ffd700;
+        border-bottom-right-radius: 5px;
+        font-weight: 600;
+      }
+
+      .message.assistant .message-content {
+        background: #f1f3f5;
+        color: #333;
+        border-bottom-left-radius: 5px;
+        position: relative;
+      }
+
+      .backend-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+        color: #ffd700;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .backend-badge.ai-sdk {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+
+      .backend-badge.anthropic {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      .backend-badge.gemini {
+        background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
       }
 
       .chat-input-container {
-        padding: 15px;
+        padding: 20px;
+        border-top: 1px solid #e9ecef;
+        background: #f8f9fa;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div class="chat-container">
-    <div class="chat-header">✨ TRIPLE JEOPARDY! NETLIFY AI GAME ✨</div>
+      .backend-selector {
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        color: #666;
+      }
 
-    <div class="chat-messages" id="chatMessages">
-      <div class="welcome-message">
-        Welcome to Triple Jeopardy, a Netlify AI game! Give me an answer and
-        I'll respond with the correct question.
+      .backend-selector label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .backend-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .backend-option {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 5px;
+        background: white;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .backend-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .model-selector {
+        display: none;
+        margin-top: 5px;
+      }
+
+      .backend-option.selected .model-selector {
+        display: block;
+      }
+
+      .model-selector select {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid #ddd;
+        font-size: 0.75rem;
+        background: white;
+      }
+
+      .backend-option:hover {
+        border-color: #1a237e;
+      }
+
+      .backend-option input[type="checkbox"] {
+        margin: 0;
+      }
+
+      .backend-option.selected {
+        background: #1a237e;
+        color: #ffd700;
+        border-color: #1a237e;
+      }
+
+      .chat-input {
+        display: flex;
+        gap: 10px;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 12px 18px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .chat-input input:focus {
+        border-color: #1a237e;
+      }
+
+      .chat-input button {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+        color: #ffd700;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .chat-input button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(26, 35, 126, 0.4);
+      }
+
+      .chat-input button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+        font-style: italic;
+        margin-bottom: 15px;
+        padding-left: 20px;
+      }
+
+      .typing-dots {
+        display: flex;
+        gap: 4px;
+      }
+
+      .typing-dots span {
+        width: 8px;
+        height: 8px;
+        background: #1a237e;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.3;
+        }
+
+        30% {
+          transform: translateY(-10px);
+          opacity: 1;
+        }
+      }
+
+      .error-message {
+        background: #ff6b6b;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .welcome-message {
+        text-align: center;
+        color: #666;
+        padding: 40px 20px;
+        font-style: italic;
+      }
+
+      .welcome-subtitle {
+        text-align: center;
+        color: #888;
+        padding: 0 20px 20px;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+
+      @media (min-width: 1400px) {
+        .chat-container {
+          max-width: 1400px;
+          height: min(85vh, 900px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .chat-container {
+          height: 100vh;
+          border-radius: 0;
+          margin: 0;
+          max-width: 100%;
+        }
+
+        body {
+          padding: 0;
+        }
+
+        .backend-options {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .backend-option {
+          justify-content: flex-start;
+        }
+
+        .chat-header {
+          font-size: 1.4rem;
+          padding: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .chat-header {
+          font-size: 1.2rem;
+          padding: 12px;
+        }
+
+        .message-content {
+          max-width: 90%;
+          font-size: 0.9rem;
+        }
+
+        .chat-input-container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">✨ Triple Buzzer! NETLIFY AI GAME ✨</div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="welcome-message">
+          Welcome to Triple Buzzer, a Netlify AI game! Give me an answer and
+          I'll respond with the correct question.
+        </div>
+
+        <div class="welcome-subtitle">
+          Remember when IBM Watson went on Jeopardy!? Well, this is nothing like
+          that because we hold neither of those copyrights.
+        </div>
       </div>
 
-      <div class="welcome-subtitle">
-        Remember when IBM Watson went on Jeopardy!? Well, this is nothing like
-        that because we hold neither of those copyrights.
+      <div class="typing-indicator" id="typingIndicator">
+        <span>AI is typing</span>
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </div>
-    </div>
 
-    <div class="typing-indicator" id="typingIndicator">
-      <span>AI is typing</span>
-      <div class="typing-dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-
-    <div class="chat-input-container">
-      <div class="backend-selector">
-        <label>Select Backends:</label>
-        <div class="backend-options">
-          <div class="backend-option">
-            <div class="backend-checkbox">
-              <input type="checkbox" value="/openai" checked />
-              <span>OpenAI</span>
+      <div class="chat-input-container">
+        <div class="backend-selector">
+          <label>Select contestants:</label>
+          <div class="backend-options">
+            <div class="backend-option">
+              <div class="backend-checkbox">
+                <input type="checkbox" value="/openai" checked />
+                <span>OpenAI</span>
+              </div>
+              <div class="model-selector">
+                <select data-backend="openai">
+                  <option value="gpt-4o-mini">Loading models...</option>
+                </select>
+              </div>
             </div>
-            <div class="model-selector">
-              <select data-backend="openai">
-                <option value="gpt-4o-mini" selected>
-                  gpt-4o-mini (default)
-                </option>
-                <option value="o3-mini">o3-mini</option>
-                <option value="o1">o1</option>
-                <option value="o1-mini">o1-mini</option>
-                <option value="gpt-4o">gpt-4o</option>
-                <option value="gpt-4-turbo">gpt-4-turbo</option>
-                <option value="codex-mini-latest">codex-mini-latest</option>
-                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-              </select>
+            <div class="backend-option">
+              <div class="backend-checkbox">
+                <input type="checkbox" value="/anthropic" checked />
+                <span>Anthropic</span>
+              </div>
+              <div class="model-selector">
+                <select data-backend="anthropic">
+                  <option value="claude-3-5-haiku-20241022">
+                    Loading models...
+                  </option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="backend-option">
-            <div class="backend-checkbox">
-              <input type="checkbox" value="/openai-edge" />
-              <span>OpenAI (Edge)</span>
-            </div>
-            <div class="model-selector">
-              <select data-backend="openai-edge">
-                <option value="gpt-4o-mini" selected>
-                  gpt-4o-mini (default)
-                </option>
-                <option value="o3-mini">o3-mini</option>
-                <option value="o1">o1</option>
-                <option value="o1-mini">o1-mini</option>
-                <option value="gpt-4o">gpt-4o</option>
-                <option value="gpt-4-turbo">gpt-4-turbo</option>
-                <option value="codex-mini-latest">codex-mini-latest</option>
-                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-              </select>
-            </div>
-          </div>
-          <div class="backend-option">
-            <div class="backend-checkbox">
-              <input type="checkbox" value="/anthropic" checked />
-              <span>Anthropic</span>
-            </div>
-            <div class="model-selector">
-              <select data-backend="anthropic">
-                <option value="claude-3-5-haiku-20241022" selected>
-                  claude-3-5-haiku (default)
-                </option>
-                <option value="claude-opus-4-20250514">claude-opus-4</option>
-                <option value="claude-sonnet-4-20250514">
-                  claude-sonnet-4
-                </option>
-                <option value="claude-3-7-sonnet-20250219">
-                  claude-3-7-sonnet
-                </option>
-                <option value="claude-3-haiku-20240307">
-                  claude-3-haiku
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="backend-option">
-            <div class="backend-checkbox">
-              <input type="checkbox" value="/gemini" checked />
-              <span>Gemini</span>
-            </div>
-            <div class="model-selector">
-              <select data-backend="gemini">
-                <option value="gemini-2.5-flash" selected>
-                  gemini-2.5-flash (default)
-                </option>
-                <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-                <option value="gemini-2.0-flash-001">gemini-2.0-flash</option>
-                <option value="gemini-2.5-flash-lite">
-                  gemini-2.5-flash-lite
-                </option>
-                <option value="gemini-2.0-flash-lite">
-                  gemini-2.0-flash-lite
-                </option>
-                <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                <option value="gemini-1.5-flash-8b">
-                  gemini-1.5-flash-8b
-                </option>
-                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-              </select>
+            <div class="backend-option">
+              <div class="backend-checkbox">
+                <input type="checkbox" value="/gemini" checked />
+                <span>Gemini</span>
+              </div>
+              <div class="model-selector">
+                <select data-backend="gemini">
+                  <option value="gemini-2.5-flash">Loading models...</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="chat-input">
-        <input type="text" id="messageInput" value="This country borders Germany, Belgium, and the North Sea"
-          maxlength="500" />
-        <button id="sendButton">Send</button>
+        <div class="chat-input">
+          <input
+            type="text"
+            id="messageInput"
+            value="This country borders Germany, Belgium, and the North Sea"
+            maxlength="500"
+          />
+          <button id="sendButton">Send</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const chatMessages = document.getElementById("chatMessages");
-    const messageInput = document.getElementById("messageInput");
-    const sendButton = document.getElementById("sendButton");
-    const typingIndicator = document.getElementById("typingIndicator");
-    const backendOptions = document.querySelectorAll(
-      '.backend-option input[type="checkbox"]',
-    );
+    <script>
+      const chatMessages = document.getElementById("chatMessages");
+      const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
+      const typingIndicator = document.getElementById("typingIndicator");
+      const backendOptions = document.querySelectorAll(
+        '.backend-option input[type="checkbox"]'
+      );
 
-    let isLoading = false;
+      let isLoading = false;
 
-    function addMessage(
-      content,
-      type,
-      backend = null,
-      model = null,
-      responseTime = null,
-    ) {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${type}`;
+      // Fetch available models from Netlify Edge Function
+      async function fetchAvailableModels() {
+        try {
+          const response = await fetch("/api/ai-models");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const modelsByProvider = await response.json();
 
-      const messageContent = document.createElement("div");
-      messageContent.className = "message-content";
-      messageContent.textContent = content;
+          // Update model dropdowns for each provider
+          Object.entries(modelsByProvider).forEach(([backend, models]) => {
+            const selectElement = document.querySelector(
+              `select[data-backend="${backend}"]`
+            );
 
-      // Add backend badge for assistant messages
-      if (type === "assistant" && backend) {
-        const badge = document.createElement("div");
-        badge.className = `backend-badge ${backend}`;
+            if (selectElement && models && models.length > 0) {
+              // Clear existing options
+              selectElement.innerHTML = "";
 
-        let badgeText = "OpenAI";
-        if (backend === "openai-edge") {
-          badgeText = "OpenAI Edge";
-        } else if (backend === "anthropic") {
-          badgeText = "Claude";
-        } else if (backend === "gemini") {
-          badgeText = "Gemini";
+              let selectedIndex = 0;
+              models.forEach((model, index) => {
+                if (['gpt-5-mini', 'claude-3-5-haiku-latest', 'gemini-2.5-flash'].includes(model))
+                  selectedIndex = index;
+              });
+
+              // Add new options from API
+              models.forEach((model, index) => {
+                const option = document.createElement("option");
+                option.value = model;
+                option.textContent = model;
+
+                if (index === selectedIndex) {
+                  option.textContent += " (default)";
+                  option.selected = true;
+                }
+
+                selectElement.appendChild(option);
+              });
+            } else if (selectElement && models.length === 0) {
+              // No models available
+              selectElement.innerHTML =
+                '<option value="">No models available</option>';
+            }
+          });
+        } catch (error) {
+          console.error("Failed to fetch models:", error);
+          // Clear dropdowns on error
+          ["openai", "anthropic", "gemini"].forEach((backend) => {
+            const selectElement = document.querySelector(
+              `select[data-backend="${backend}"]`
+            );
+            if (selectElement) {
+              selectElement.innerHTML =
+                '<option value="">Failed to load models</option>';
+            }
+          });
         }
+      }
 
-        badge.textContent = badgeText;
-        badge.title = `Backend: ${backend}, Model: ${model || "unknown"}`;
-        messageContent.appendChild(badge);
+      // Fetch models on page load
+      fetchAvailableModels();
 
-        // Add timing indicator if provided
-        if (responseTime !== null) {
-          const timing = document.createElement("div");
-          timing.className = "timing-indicator";
-          timing.textContent = `${responseTime}ms`;
-          timing.style.cssText = `
+      function addMessage(
+        content,
+        type,
+        backend = null,
+        model = null,
+        responseTime = null
+      ) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${type}`;
+
+        const messageContent = document.createElement("div");
+        messageContent.className = "message-content";
+        messageContent.textContent = content;
+
+        // Add backend badge for assistant messages
+        if (type === "assistant" && backend) {
+          const badge = document.createElement("div");
+          badge.className = `backend-badge ${backend}`;
+
+          let badgeText = "OpenAI";
+          if (backend === "anthropic") {
+            badgeText = "Claude";
+          } else if (backend === "gemini") {
+            badgeText = "Gemini";
+          }
+
+          badge.textContent = badgeText;
+          badge.title = `Backend: ${backend}, Model: ${model || "unknown"}`;
+          messageContent.appendChild(badge);
+
+          // Add timing indicator if provided
+          if (responseTime !== null) {
+            const timing = document.createElement("div");
+            timing.className = "timing-indicator";
+            timing.textContent = `${responseTime}ms`;
+            timing.style.cssText = `
             position: absolute;
             bottom: -8px;
             right: -8px;
@@ -543,175 +548,173 @@
             border-radius: 4px;
             font-weight: 500;
           `;
-          messageContent.appendChild(timing);
-        }
-      }
-
-      messageDiv.appendChild(messageContent);
-      chatMessages.appendChild(messageDiv);
-
-      // Remove welcome messages if they exist
-      const welcomeMessage = chatMessages.querySelector(".welcome-message");
-      const welcomeSubtitle = chatMessages.querySelector(".welcome-subtitle");
-      if (welcomeMessage) {
-        welcomeMessage.remove();
-      }
-      if (welcomeSubtitle) {
-        welcomeSubtitle.remove();
-      }
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function showError(message) {
-      const errorDiv = document.createElement("div");
-      errorDiv.className = "error-message";
-      errorDiv.textContent = message;
-      chatMessages.appendChild(errorDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function setLoading(loading) {
-      isLoading = loading;
-      sendButton.disabled = loading;
-      messageInput.disabled = loading;
-
-      if (loading) {
-        typingIndicator.style.display = "flex";
-        sendButton.textContent = "Sending...";
-      } else {
-        typingIndicator.style.display = "none";
-        sendButton.textContent = "Send";
-      }
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const message = messageInput.value.trim();
-      if (!message || isLoading) return;
-
-      const selectedEndpoints = Array.from(backendOptions)
-        .filter((checkbox) => checkbox.checked)
-        .map((checkbox) => checkbox.value);
-
-      if (selectedEndpoints.length === 0) {
-        showError("Please select at least one backend");
-        return;
-      }
-
-      // Add user message to chat
-      addMessage(message, "user");
-      messageInput.value = "";
-
-      setLoading(true);
-
-      try {
-        // Send requests to all selected backends in parallel
-        let pendingRequests = selectedEndpoints.length;
-
-        selectedEndpoints.forEach(async (endpoint) => {
-          const startTime = performance.now();
-
-          // Get selected model for this backend
-          const backendName = endpoint.replace("/", "");
-          const modelSelect = document.querySelector(
-            `select[data-backend="${backendName}"]`,
-          );
-          const selectedModel = modelSelect ? modelSelect.value : null;
-
-          try {
-            const response = await fetch(endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({message, model: selectedModel}),
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.error) {
-              throw new Error(data.error);
-            }
-
-            // Add response immediately as it comes in
-            const responseTime = Math.round(performance.now() - startTime);
-            addMessage(
-              data.answer,
-              "assistant",
-              endpoint.replace("/", ""),
-              null,
-              responseTime,
-            );
-          } catch (error) {
-            showError(`${endpoint.replace("/", "")}: ${error.message}`);
-          } finally {
-            pendingRequests--;
-            if (pendingRequests === 0) {
-              setLoading(false);
-              messageInput.focus();
-            }
+            messageContent.appendChild(timing);
           }
-        });
-      } catch (error) {
-        console.error("Error sending message:", error);
-        showError(`Error: ${error.message}`);
-        setLoading(false);
-        messageInput.focus();
-      }
-    }
-
-    // Event listeners
-    sendButton.addEventListener("click", sendMessage);
-
-    messageInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    // Update checkbox styling when checked
-    backendOptions.forEach((checkbox) => {
-      checkbox.addEventListener("change", function () {
-        const option = this.closest(".backend-option");
-        if (this.checked) {
-          option.classList.add("selected");
-        } else {
-          option.classList.remove("selected");
         }
-      });
 
-      // Initialize styling
-      if (checkbox.checked) {
-        checkbox.closest(".backend-option").classList.add("selected");
+        messageDiv.appendChild(messageContent);
+        chatMessages.appendChild(messageDiv);
+
+        // Remove welcome messages if they exist
+        const welcomeMessage = chatMessages.querySelector(".welcome-message");
+        const welcomeSubtitle = chatMessages.querySelector(".welcome-subtitle");
+        if (welcomeMessage) {
+          welcomeMessage.remove();
+        }
+        if (welcomeSubtitle) {
+          welcomeSubtitle.remove();
+        }
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
-      // Make the whole div clickable (but not the model dropdown)
-      const option = checkbox.closest(".backend-option");
-      option.addEventListener("click", function (e) {
-        // Don't trigger if clicking on the model dropdown
-        if (
-          e.target.tagName === "SELECT" ||
-          e.target.closest(".model-selector select")
-        ) {
+      function showError(message) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "error-message";
+        errorDiv.textContent = message;
+        chatMessages.appendChild(errorDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function setLoading(loading) {
+        isLoading = loading;
+        sendButton.disabled = loading;
+        messageInput.disabled = loading;
+
+        if (loading) {
+          typingIndicator.style.display = "flex";
+          sendButton.textContent = "Sending...";
+        } else {
+          typingIndicator.style.display = "none";
+          sendButton.textContent = "Send";
+        }
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message || isLoading) return;
+
+        const selectedEndpoints = Array.from(backendOptions)
+          .filter((checkbox) => checkbox.checked)
+          .map((checkbox) => checkbox.value);
+
+        if (selectedEndpoints.length === 0) {
+          showError("Please select at least one backend");
           return;
         }
 
-        // Toggle the checkbox
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event("change"));
+        // Add user message to chat
+        addMessage(message, "user");
+        setLoading(true);
+
+        try {
+          // Send requests to all selected models in parallel
+          let pendingRequests = selectedEndpoints.length;
+
+          selectedEndpoints.forEach(async (endpoint) => {
+            const startTime = performance.now();
+
+            // Get selected model for this backend
+            const backendName = endpoint.replace("/", "");
+            const modelSelect = document.querySelector(
+              `select[data-backend="${backendName}"]`
+            );
+            const selectedModel = modelSelect ? modelSelect.value : null;
+
+            try {
+              const response = await fetch("/api" + endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message, model: selectedModel }),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const data = await response.json();
+              console.log(`Response from ${endpoint}: ${JSON.stringify(data)}`);
+
+              if (data.error) {
+                throw new Error(data.error);
+              }
+
+              // Add response immediately as it comes in
+              const responseTime = Math.round(performance.now() - startTime);
+              addMessage(
+                data.answer,
+                "assistant",
+                endpoint.replace("/", ""),
+                null,
+                responseTime
+              );
+            } catch (error) {
+              showError(`${endpoint.replace("/", "")}: ${error.message}`);
+            } finally {
+              pendingRequests--;
+              if (pendingRequests === 0) {
+                setLoading(false);
+                messageInput.focus();
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error sending message:", error);
+          showError(`Error: ${error.message}`);
+          setLoading(false);
+          messageInput.focus();
+        }
+      }
+
+      // Event listeners
+      sendButton.addEventListener("click", sendMessage);
+
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
       });
-    });
 
-    // Focus input on load
-    messageInput.focus();
-  </script>
-</body>
+      // Update checkbox styling when checked
+      backendOptions.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          const option = this.closest(".backend-option");
+          if (this.checked) {
+            option.classList.add("selected");
+          } else {
+            option.classList.remove("selected");
+          }
+        });
 
+        // Initialize styling
+        if (checkbox.checked) {
+          checkbox.closest(".backend-option").classList.add("selected");
+        }
+
+        // Make the whole div clickable (but not the model dropdown)
+        const option = checkbox.closest(".backend-option");
+        option.addEventListener("click", function (e) {
+          // Don't trigger if clicking on the model dropdown
+          if (
+            e.target.tagName === "SELECT" ||
+            e.target.closest(".model-selector select")
+          ) {
+            return;
+          }
+
+          // Toggle the checkbox
+          checkbox.checked = !checkbox.checked;
+          checkbox.dispatchEvent(new Event("change"));
+        });
+      });
+
+      // Focus input on load
+      messageInput.focus();
+    </script>
+  </body>
 </html>

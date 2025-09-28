@@ -67,6 +67,7 @@ Automatically set when using Netlify's AI Gateway on credit-based plans. Otherwi
 The single-page application (`index.html`):
 - Dynamically fetches available models from `/api/ai-models`
 - Allows backend and model selection for each provider
+- Random example button (🎲) to populate input with sample questions
 - Sends parallel requests to selected models
 - Displays response times in milliseconds
 - Shows provider-specific badges with color coding

@@ -10,10 +10,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.3",
-    "@google/genai": "^1.16.0",
-    "netlify-cli": "^23.4.2",
-    "openai": "^5.13.1"
+    "@anthropic-ai/sdk": "^0.64.0",
+    "@google/genai": "^1.21.0",
+    "openai": "^5.23.1"
   },
   "devDependencies": {
     "@types/node": "^22.17.2"

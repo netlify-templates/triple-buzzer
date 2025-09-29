@@ -17,27 +17,23 @@ export async function validate(
   apiKeyName: string,
   req: Request
 ): Promise<ValidationResult> {
-  // Ensure the relevant API key exists in the environment. 
+  // Ensure the relevant API key exists in the environment.
   // With Netlify on credit-based plans, you should have these keys by default!
   const apiKey = process.env[apiKeyName];
   if (!apiKey) {
-    console.error(`${apiKeyName} is not set`);
+    const errorMessage = `${apiKeyName} is not set.`;
+    console.error(errorMessage);
     return {
-      error: Response.json(
-        { error: `${apiKeyName} is not set` },
-        { status: 500 }
-      ),
+      error: new Response(errorMessage, { status: 500 }),
     };
   }
 
   const body = await req.json().catch(() => null);
   if (!body || !body.message || !body.model) {
-    console.error("Missing required parameters: message and model");
+    const errorMessage = "Missing required parameters in body: message and model";
+    console.error(errorMessage);
     return {
-      error: Response.json(
-        { error: "Both message and model are required" },
-        { status: 400 }
-      ),
+      error: new Response(errorMessage, { status: 400 }),
     };
   }
 

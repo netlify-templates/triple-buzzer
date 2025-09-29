@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { SYSTEM_PROMPT, validate } from "./common";
 import type { ResponseCreateParams } from "openai/resources/responses/responses.mjs";
+import { SYSTEM_PROMPT, validate } from "./utils/common";
 
 export default async function (req: Request) {
   const validatedRequest = await validate("OPENAI_API_KEY", req);

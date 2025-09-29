@@ -3,7 +3,7 @@ import {
   GenerateContentParameters,
   GenerateContentConfig,
 } from "@google/genai";
-import { SYSTEM_PROMPT, validate } from "./common";
+import { SYSTEM_PROMPT, validate } from "./utils/common";
 
 export default async function (req: Request) {
   const validatedRequest = await validate("GEMINI_API_KEY", req);

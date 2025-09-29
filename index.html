@@ -751,7 +751,7 @@
               });
 
               if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`Error ${response.status}: ${await response.text()}`);
               }
 
               const data = await response.json();
@@ -771,7 +771,7 @@
                 responseTime
               );
             } catch (error) {
-              showError(`${endpoint.replace("/", "")}: ${error.message}`);
+              showError(`/api${endpoint} responded with ${error.message}`);
             } finally {
               pendingRequests--;
               if (pendingRequests === 0) {

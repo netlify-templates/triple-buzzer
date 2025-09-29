@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { SYSTEM_PROMPT, validate } from "./common";
 import { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages.mjs";
+import { SYSTEM_PROMPT, validate } from "./utils/common";
 
 const MAX_OUTPUT_TOKENS = 16; // Anthropic requires max tokens (and tends to be chatty)
 

@@ -1,7 +1,7 @@
 import {
   GoogleGenAI,
-  GenerateContentParameters,
-  GenerateContentConfig,
+  type GenerateContentParameters,
+  type GenerateContentConfig,
 } from "@google/genai";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
 

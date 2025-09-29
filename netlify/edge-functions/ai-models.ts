@@ -1,4 +1,4 @@
-export default async function (request: Request) {
+export default async function () {
   try {
     // Fetch from Netlify AI Gateway API
     const response = await fetch('https://api.netlify.com/api/v1/ai-gateway/providers');
@@ -8,8 +8,8 @@ export default async function (request: Request) {
     // Transform the data to extract model names per provider
     const modelsByProvider: Record<string, string[]> = {};
 
-    const providers = (await response.json()).providers;
-    Object.entries(providers).forEach(([providerName, provider]: [string, any]) => {
+    const providers = (await response.json()).providers as Record<string, {models: string[]}>;
+    Object.entries(providers).forEach(([providerName, provider]) => {
       if (['openai', 'anthropic', 'gemini'].includes(providerName)) {
         modelsByProvider[providerName] = provider.models;
       }

@@ -29,6 +29,7 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 ### Technology Stack
 - **Frontend**: React 19.1.1 + TypeScript 5.9.2
 - **Build Tool**: Vite 7.1.7 with SWC plugin for fast compilation
+- **Styling**: Tailwind CSS v4.1.13 with `@tailwindcss/vite` plugin
 - **Linting**: ESLint 9.36.0 with flat config, TypeScript and React Hooks support
 - **Backend**: Netlify serverless functions and edge functions (TypeScript)
 - **AI SDKs**:
@@ -52,9 +53,8 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 │   │   └── useChat.ts
 │   ├── data/            # Data and constants
 │   │   └── exampleQuestions.ts
-│   ├── styles/          # CSS files
-│   │   └── App.css
 │   ├── types.ts         # TypeScript type definitions
+│   ├── index.css        # Tailwind CSS and custom styles
 │   ├── App.tsx          # Main App component
 │   ├── main.tsx         # React entry point
 │   └── vite-env.d.ts    # Vite type declarations
@@ -122,11 +122,21 @@ React single-page application with:
 - User can toggle providers and select models per provider
 - Model selections persisted in component state
 
+### Styling Architecture
+- **Tailwind CSS v4**: Uses new `@import "tailwindcss"` syntax in `index.css`
+- **Custom CSS Classes**: Reusable classes for gradients, colors, and buttons
+  - `.gradient-primary`: Main app gradient (indigo blue)
+  - `.gradient-openai`, `.gradient-anthropic`, `.gradient-gemini`: Provider-specific gradients
+  - `.text-gold`: Gold text color (#ffd700)
+  - `.btn-primary`: Primary button style with hover effects
+- **Responsive Design**: Mobile-first with breakpoints at 480px, 768px, 1060px, 1280px
+- **Utility-First**: Combines Tailwind utilities with custom classes for maintainability
+
 ### TypeScript Configuration
 - Uses `@tsconfig/vite-react` as base configuration
 - Strict mode enabled for maximum type safety
 - `skipLibCheck: true` for faster compilation
-- Includes `src/` directory only
+- Includes `src/` and `netlify/` directories
 - Type declarations for CSS modules in `vite-env.d.ts`
 
 ### Linting Configuration

@@ -1,5 +1,43 @@
 @import "tailwindcss";
 
+.gradient-primary {
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+}
+
+.gradient-openai {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.gradient-anthropic {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-gemini {
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+}
+
+.text-gold {
+  color: #ffd700;
+}
+
+.btn-primary {
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+  color: #ffd700;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 @keyframes typing {
   0%, 60%, 100% {
     transform: translateY(0);

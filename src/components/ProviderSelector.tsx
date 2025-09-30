@@ -61,8 +61,8 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
     return (
       <div
         key={provider}
-        className={`flex cursor-pointer flex-col gap-2 rounded-[5px] border-2 bg-white p-3 text-[0.8rem] transition-all hover:border-[#1a237e] ${
-          state.enabled ? 'border-[#1a237e] bg-[#1a237e] text-[#ffd700]' : 'border-[#e9ecef]'
+        className={`flex cursor-pointer flex-col gap-2 rounded border-2 p-3 text-sm transition-all ${
+          state.enabled ? 'gradient-primary border-indigo-900 text-gold' : 'border-gray-200 bg-white hover:border-indigo-900'
         }`}
         onClick={(e) => {
           if ((e.target as HTMLElement).tagName !== 'SELECT') {
@@ -76,16 +76,15 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
             checked={state.enabled}
             onChange={() => toggleProvider(provider)}
             onClick={(e) => e.stopPropagation()}
-            className="m-0"
           />
           <span>{label}</span>
         </div>
         {state.enabled && (
-          <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
+          <div onClick={(e) => e.stopPropagation()}>
             <select
               value={state.selectedModel}
               onChange={(e) => updateModel(provider, e.target.value)}
-              className="w-full border border-[#ddd] bg-white px-2 py-1 text-[0.75rem]"
+              className="w-full rounded border border-gray-300 bg-white px-2 py-1 text-xs"
             >
               {availableModels.length > 0 ? (
                 availableModels.map((model) => (
@@ -104,9 +103,9 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
   }
 
   return (
-    <div className="mb-[15px] text-[0.9rem] text-[#666]">
+    <div className="mb-4 text-gray-600">
       <label className="mb-2 block font-semibold">Select contestants:</label>
-      <div className="flex flex-wrap gap-2.5 max-md:flex-col max-md:gap-2">
+      <div className="flex flex-wrap gap-2 max-md:flex-col">
         {renderProviderOption('openai', 'OpenAI')}
         {renderProviderOption('anthropic', 'Anthropic')}
         {renderProviderOption('gemini', 'Gemini')}

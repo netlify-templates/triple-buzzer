@@ -61,27 +61,31 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
     return (
       <div
         key={provider}
-        className={`provider-option ${state.enabled ? 'selected' : ''}`}
+        className={`flex cursor-pointer flex-col gap-2 rounded-[5px] border-2 bg-white p-3 text-[0.8rem] transition-all hover:border-[#1a237e] ${
+          state.enabled ? 'border-[#1a237e] bg-[#1a237e] text-[#ffd700]' : 'border-[#e9ecef]'
+        }`}
         onClick={(e) => {
           if ((e.target as HTMLElement).tagName !== 'SELECT') {
             toggleProvider(provider)
           }
         }}
       >
-        <div className="provider-checkbox">
+        <div className="flex items-center gap-1.5">
           <input
             type="checkbox"
             checked={state.enabled}
             onChange={() => toggleProvider(provider)}
             onClick={(e) => e.stopPropagation()}
+            className="m-0"
           />
           <span>{label}</span>
         </div>
         {state.enabled && (
-          <div className="model-selector" onClick={(e) => e.stopPropagation()}>
+          <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
             <select
               value={state.selectedModel}
               onChange={(e) => updateModel(provider, e.target.value)}
+              className="w-full border border-[#ddd] bg-white px-2 py-1 text-[0.75rem]"
             >
               {availableModels.length > 0 ? (
                 availableModels.map((model) => (
@@ -100,9 +104,9 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
   }
 
   return (
-    <div className="provider-selector">
-      <label>Select contestants:</label>
-      <div className="provider-options">
+    <div className="mb-[15px] text-[0.9rem] text-[#666]">
+      <label className="mb-2 block font-semibold">Select contestants:</label>
+      <div className="flex flex-wrap gap-2.5 max-md:flex-col max-md:gap-2">
         {renderProviderOption('openai', 'OpenAI')}
         {renderProviderOption('anthropic', 'Anthropic')}
         {renderProviderOption('gemini', 'Gemini')}

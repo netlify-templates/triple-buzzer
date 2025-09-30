@@ -28,7 +28,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="chat-input">
+    <div className="flex gap-2.5">
       <input
         type="text"
         value={input}
@@ -36,11 +36,21 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         onKeyPress={handleKeyPress}
         maxLength={500}
         disabled={disabled}
+        className="flex-1 rounded-[10px] border-2 border-[#e9ecef] px-[18px] py-3 text-base outline-none transition-colors focus:border-[#1a237e]"
       />
-      <button onClick={handleRandom} disabled={disabled} title="Get random example">
+      <button
+        onClick={handleRandom}
+        disabled={disabled}
+        title="Get random example"
+        className="min-w-[50px] rounded-lg border-none bg-gradient-to-br from-[#1a237e] to-[#3949ab] px-[18px] py-3 text-[1.2rem] font-semibold text-[#ffd700] transition-all hover:shadow-[0_10px_20px_rgba(26,35,126,0.4)] hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+      >
         🎲
       </button>
-      <button onClick={handleSend} disabled={disabled}>
+      <button
+        onClick={handleSend}
+        disabled={disabled}
+        className="rounded-lg border-none bg-gradient-to-br from-[#1a237e] to-[#3949ab] px-6 py-3 text-base font-semibold text-[#ffd700] transition-all hover:shadow-[0_10px_20px_rgba(26,35,126,0.4)] hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+      >
         {disabled ? 'Sending...' : 'Send'}
       </button>
     </div>

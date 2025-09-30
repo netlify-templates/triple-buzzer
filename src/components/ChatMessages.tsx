@@ -14,14 +14,14 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
   }, [messages])
 
   return (
-    <div className="chat-messages">
+    <div className="flex flex-1 flex-col gap-[15px] overflow-y-auto p-5">
       {messages.length === 0 ? (
         <>
-          <div className="welcome-message">
+          <div className="py-10 px-5 text-center italic text-[#666]">
             Welcome to Triple Buzzer, a Netlify AI game! Give me an answer and I'll respond with
             the correct question.
           </div>
-          <div className="welcome-subtitle">
+          <div className="px-5 pb-5 text-center text-[0.85rem] leading-[1.4] text-[#888]">
             Remember when IBM Watson went on Jeopardy!? Well, this is nothing like that because we
             hold neither of those copyrights.
           </div>

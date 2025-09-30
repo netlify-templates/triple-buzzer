@@ -12,7 +12,7 @@ interface ProviderState {
 }
 
 const DEFAULT_MODELS: Record<Provider, string> = {
-  openai: 'gpt-5',
+  openai: 'gpt-5-mini',
   anthropic: 'claude-3-5-haiku-latest',
   gemini: 'gemini-2.5-flash',
 }
@@ -61,8 +61,8 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
     return (
       <div
         key={provider}
-        className={`flex cursor-pointer flex-col gap-2 rounded border-2 p-3 text-sm transition-all ${
-          state.enabled ? 'gradient-primary border-indigo-900 text-gold' : 'border-gray-200 bg-white hover:border-indigo-900'
+        className={`card ${
+          state.enabled ? 'gradient-primary' : 'border bg-base-300'
         }`}
         onClick={(e) => {
           if ((e.target as HTMLElement).tagName !== 'SELECT') {
@@ -70,42 +70,39 @@ export function ProviderSelector({ models, onSelectionChange }: ProviderSelector
           }
         }}
       >
-        <div className="flex items-center gap-1.5">
-          <input
-            type="checkbox"
-            checked={state.enabled}
-            onChange={() => toggleProvider(provider)}
-            onClick={(e) => e.stopPropagation()}
-          />
-          <span>{label}</span>
+        <div className="card-body p-2 items-center">
+            <div className={"card-title " + (state.enabled ? 'text-gold' : 'text-base-400') }>
+              <input type="checkbox" checked={state.enabled} className="toggle border-indigo-600 bg-indigo-500 checked:border-orange-400 checked:bg-orange-300 checked:text-orange-900" />
+              <span>{label}</span>
+            </div>
+          {state.enabled && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <select
+                value={state.selectedModel}
+                onChange={(e) => updateModel(provider, e.target.value)}
+                className="select select-ghost w-full bg-base-300"
+              >
+                {availableModels.length > 0 ? (
+                  availableModels.map((model) => (
+                    <option key={model} value={model}>
+                      {model}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Loading...</option>
+                )}
+              </select>
+            </div>
+          )}
         </div>
-        {state.enabled && (
-          <div onClick={(e) => e.stopPropagation()}>
-            <select
-              value={state.selectedModel}
-              onChange={(e) => updateModel(provider, e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-2 py-1 text-xs"
-            >
-              {availableModels.length > 0 ? (
-                availableModels.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))
-              ) : (
-                <option value="">Loading models...</option>
-              )}
-            </select>
-          </div>
-        )}
       </div>
     )
   }
 
   return (
-    <div className="mb-4 text-gray-600">
-      <label className="mb-2 block font-semibold">Select contestants:</label>
-      <div className="flex flex-wrap gap-2 max-md:flex-col">
+    <div className='flex flex-col justify-center items-center gap-2 my-3'>
+      <span className="text-lg">Select your contestants!</span>
+      <div className="grid grid-cols-3 grow w-full justify-items-stretch gap-2">
         {renderProviderOption('openai', 'OpenAI')}
         {renderProviderOption('anthropic', 'Anthropic')}
         {renderProviderOption('gemini', 'Gemini')}

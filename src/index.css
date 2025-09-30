@@ -1,5 +1,7 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
+/* Custom gradient backgrounds for branding */
 .gradient-primary {
   background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
 }
@@ -16,28 +18,12 @@
   background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
 }
 
+/* Custom gold text color */
 .text-gold {
   color: #ffd700;
 }
 
-.btn-primary {
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
-  color: #ffd700;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.btn-primary:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
+/* Typing indicator animation */
 @keyframes typing {
   0%, 60%, 100% {
     transform: translateY(0);

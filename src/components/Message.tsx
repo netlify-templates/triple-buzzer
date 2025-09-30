@@ -1,41 +1,60 @@
-import type { Message as MessageType } from '../types'
+import type { Message as MessageType } from "../types";
 
 interface MessageProps {
-  message: MessageType
+  message: MessageType;
 }
 
 export function Message({ message }: MessageProps) {
   const providerLabels = {
-    openai: 'OpenAI',
-    anthropic: 'Claude',
-    gemini: 'Gemini',
-  }
+    openai: "OpenAI",
+    anthropic: "Claude",
+    gemini: "Gemini",
+  };
 
   const providerColors = {
-    openai: 'gradient-openai',
-    anthropic: 'gradient-anthropic',
-    gemini: 'gradient-gemini',
-  }
+    openai: "gradient-openai",
+    anthropic: "gradient-anthropic",
+    gemini: "gradient-gemini",
+  };
+
+  const isModelAnswer = message.type === "assistant";
 
   return (
-    <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`relative max-w-[80%] rounded-lg px-4 py-3 ${
-        message.type === 'user'
-          ? 'gradient-primary font-semibold text-gold'
-          : 'bg-gray-100 text-gray-800'
-      }`}>
+    <div className={`chat ${isModelAnswer ? "chat-start" : "chat-end"}`}>
+      <div className="chat-image">
+        {isModelAnswer ? (<span className={"py-2 px-3 mr-2 rounded-2xl font-bold text-lg text-base-content " + providerColors[message.provider!]}>
+        {providerLabels[message.provider!]}
+        
+        </span>) : ("")}
+      </div>
+
+      <div
+        className={
+          "chat-bubble rounded-2xl  text-[16px] text-base-content " +
+          (isModelAnswer ? "chat-bubble-warning" : "chat-bubble-info")
+        }
+      >
         {message.content}
-        {message.type === 'assistant' && message.provider && (
+      </div>
+
+      {isModelAnswer && (
+        <div
+          className="chat-footer text-[14px]"
+        >
+          <time className="">{message.responseTime}ms</time>
+        </div>
+      )}
+
+      {/*message.type === 'assistant' && message.provider && (
           <>
-            <div className={`absolute -top-2 -right-2 rounded px-1.5 py-0.5 text-xs font-semibold uppercase text-gold ${providerColors[message.provider]}`}>
+            <div className={`badge badge-sm absolute -top-2 -right-2 text-gold ${providerColors[message.provider]}`}>
               {providerLabels[message.provider]}
             </div>
             {message.responseTime !== undefined && (
-              <div className="absolute -bottom-2 -right-2 rounded bg-black/60 px-1 text-xs text-white">{message.responseTime}ms</div>
+              <div className="badge badge-xs absolute -bottom-2 -right-2">{message.responseTime}ms</div>
             )}
           </>
-        )}
-      </div>
+        )*/}
     </div>
-  )
+  );
 }

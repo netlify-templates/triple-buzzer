@@ -1,58 +1,62 @@
-import { useState } from 'react'
-import { EXAMPLE_QUESTIONS } from '../data/exampleQuestions'
+import { useState } from "react";
+import { EXAMPLE_QUESTIONS } from "../data/exampleQuestions";
 
 interface ChatInputProps {
-  onSend: (message: string) => void
-  disabled: boolean
+  onSend: (message: string) => void;
+  disabled: boolean;
 }
 
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
-  const [input, setInput] = useState('This country borders Germany, Belgium, and the North Sea')
+  const [input, setInput] = useState(
+    "This country borders Germany, Belgium, and the North Sea"
+  );
 
   const handleSend = () => {
     if (input.trim() && !disabled) {
-      onSend(input)
+      onSend(input);
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
 
   const handleRandom = () => {
-    const randomIndex = Math.floor(Math.random() * EXAMPLE_QUESTIONS.length)
-    setInput(EXAMPLE_QUESTIONS[randomIndex])
-  }
+    const randomIndex = Math.floor(Math.random() * EXAMPLE_QUESTIONS.length);
+    setInput(EXAMPLE_QUESTIONS[randomIndex]);
+  };
 
   return (
-    <div className="flex gap-2">
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
-        maxLength={500}
-        disabled={disabled}
-        className="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 outline-none transition-colors focus:border-indigo-900"
-      />
+    <div className="flex gap-4">
+      <div className="join w-full">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          maxLength={500}
+          disabled={disabled}
+          className="input input-bordered join-item flex-1"
+        />
+        <button
+          onClick={handleSend}
+          disabled={disabled}
+          className="btn btn-primary join-item"
+        >
+          {disabled ? "Sending..." : "Send"}
+        </button>
+      </div>
       <button
         onClick={handleRandom}
         disabled={disabled}
         title="Get random example"
-        className="btn-primary min-w-[50px] px-4 py-3 text-xl"
+        className="btn btn-primary join-item text-2xl"
       >
         🎲
       </button>
-      <button
-        onClick={handleSend}
-        disabled={disabled}
-        className="btn-primary px-6 py-3"
-      >
-        {disabled ? 'Sending...' : 'Send'}
-      </button>
     </div>
-  )
+  );
 }

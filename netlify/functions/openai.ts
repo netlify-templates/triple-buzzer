@@ -38,6 +38,7 @@ export const config: Config = {
   path: "/api/openai",
   rateLimit: {
     windowSize: 3,
+    aggregateBy: ["ip", "domain"],
   }
 };
 

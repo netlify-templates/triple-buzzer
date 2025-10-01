@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import type { ResponseCreateParams } from "openai/resources/responses/responses.mjs";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
+import type { Config } from "@netlify/functions"
+
 
 export default async function (req: Request) {
   const validatedRequest = await validate("OPENAI_API_KEY", req);
@@ -32,8 +34,11 @@ export default async function (req: Request) {
   });
 }
 
-export const config = {
+export const config: Config = {
   path: "/api/openai",
+  rateLimit: {
+    windowSize: 5,
+  }
 };
 
 function minimizeReasoning(model: string, params: ResponseCreateParams) {

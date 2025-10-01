@@ -3,7 +3,6 @@ import type { ResponseCreateParams } from "openai/resources/responses/responses.
 import { SYSTEM_PROMPT, validate } from "./utils/common";
 import type { Config } from "@netlify/functions"
 
-
 export default async function (req: Request) {
   const validatedRequest = await validate("OPENAI_API_KEY", req);
   if (validatedRequest.error) return validatedRequest.error;

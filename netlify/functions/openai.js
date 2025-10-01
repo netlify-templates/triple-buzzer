@@ -1,14 +1,12 @@
 import OpenAI from "openai";
-import type { ResponseCreateParams } from "openai/resources/responses/responses.mjs";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
-import type { Config } from "@netlify/functions"
 
-export default async function (req: Request) {
+export default async function (req) {
   const validatedRequest = await validate("OPENAI_API_KEY", req);
   if (validatedRequest.error) return validatedRequest.error;
   const { message, model } = validatedRequest;
 
-  const params: ResponseCreateParams = {
+  const params = {
     model,
     input: [
       {
@@ -42,7 +40,7 @@ export const config = {
   },
 };
 
-function minimizeReasoning(model: string, params: ResponseCreateParams) {
+function minimizeReasoning(model, params) {
   const supportsReasoning = /gpt-5|codex|o3|o4/.test(model);
   if (supportsReasoning) {
     const canDisable = !/codex|o3|o4/.test(model);

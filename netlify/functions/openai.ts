@@ -37,10 +37,10 @@ export default async function (req: Request) {
 export const config = {
   path: "/api/openai",
   rateLimit: {
-    windowSize: 60,
-    windowLimit: 5,
+    windowLimit: 5, // Max 5 requests per window
+    windowSize: 60, // Window size in seconds (default: 60)
     aggregateBy: ["ip", "domain"],
-  }
+  },
 };
 
 function minimizeReasoning(model: string, params: ResponseCreateParams) {

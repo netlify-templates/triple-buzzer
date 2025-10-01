@@ -34,10 +34,10 @@ export default async function (req: Request) {
   });
 }
 
-export const config: Config = {
+export const config = {
   path: "/api/openai",
   rateLimit: {
-    windowSize: 3,
+    windowLimit: 5,
     aggregateBy: ["ip", "domain"],
   }
 };

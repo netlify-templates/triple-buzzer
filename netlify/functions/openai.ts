@@ -37,6 +37,7 @@ export default async function (req: Request) {
 export const config = {
   path: "/api/openai",
   rateLimit: {
+    windowSize: 60,
     windowLimit: 5,
     aggregateBy: ["ip", "domain"],
   }

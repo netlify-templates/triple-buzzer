@@ -79,8 +79,8 @@ A Jeopardy!-style game that compares AI responses from three different models. U
   - `validate()`: Unified API key and request body validation
 
 #### Edge Functions (`netlify/edge-functions/`)
-- `ai-models.ts` - Fetches available models from Netlify AI Gateway API
-  - Path: `/api/ai-models`
+- `list-models.ts` - Fetches available models from Netlify AI Gateway API
+  - Path: `/api/list-models`
   - Returns model lists by provider (openai, anthropic, gemini)
 
 ### API Endpoints
@@ -88,7 +88,7 @@ All function endpoints are prefixed with `/api`:
 - `/api/openai` - OpenAI function
 - `/api/anthropic` - Anthropic function
 - `/api/gemini` - Gemini function
-- `/api/ai-models` - Model listing edge function
+- `/api/list-models` - Model listing edge function
 
 ### Request/Response Format
 All AI endpoints require:
@@ -107,7 +107,7 @@ React single-page application with:
 - **Component-based architecture**: Modular, reusable React components
 - **Custom hooks**: `useModels` for fetching AI models, `useChat` for message handling
 - **Type safety**: Full TypeScript coverage with strict mode enabled
-- **Dynamic model selection**: Fetches available models from `/api/ai-models` on load
+- **Dynamic model selection**: Fetches available models from `/api/list-models` on load
 - **Provider selection**: Toggle and configure OpenAI, Anthropic, and Gemini
 - **Random examples**: 30 sample questions accessible via 🎲 button
 - **Parallel requests**: Sends to all selected providers simultaneously
@@ -116,7 +116,7 @@ React single-page application with:
 - **Responsive design**: Mobile-friendly layout with breakpoints
 
 ### Model Selection Logic
-- Default models: `gpt-5`, `claude-3-5-haiku-latest`, `gemini-2.5-flash`
+- Default models: see `DEFAULT_MODELS` in `ProviderSelector` component
 - Models fetched dynamically from Netlify AI Gateway
 - All three providers enabled by default
 - User can toggle providers and select models per provider

@@ -14,7 +14,7 @@ interface ProviderState {
 const DEFAULT_MODELS: Record<Provider, string> = {
   openai: 'gpt-5-mini',
   anthropic: 'claude-3-5-haiku-latest',
-  gemini: 'gemini-2.5-flash',
+  gemini: 'gemini-flash-latest',
 }
 
 export function ProviderSelector({ models, onSelectionChange }: ProviderSelectorProps) {

@@ -32,6 +32,6 @@ If you're not using the Netlify CLI or deploying to Netlify, or if you're not us
 - `/api/openai` - OpenAI serverless function
 - `/api/anthropic` - Anthropic serverless function
 - `/api/gemini` - Google Gemini serverless function
-- `/api/ai-models` - Edge function for fetching available models
+- `/api/list-models` - Edge function for fetching available models
 
 Built with Netlify Functions and vanilla HTML/CSS/JS.

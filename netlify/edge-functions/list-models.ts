@@ -25,5 +25,5 @@ export default async function () {
 }
 
 export const config: Config = {
-  path: '/api/ai-models'
+  path: '/api/list-models'
 };

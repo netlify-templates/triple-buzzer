@@ -13,7 +13,7 @@ export function useModels() {
   useEffect(() => {
     async function fetchModels() {
       try {
-        const response = await fetch('/api/ai-models')
+        const response = await fetch('/api/list-models')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }

@@ -4,6 +4,7 @@ import {
   type GenerateContentConfig,
 } from "@google/genai";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
+import { Config } from "@netlify/functions";
 
 export default async function (req: Request) {
   const validatedRequest = await validate("GEMINI_API_KEY", req);
@@ -19,7 +20,11 @@ export default async function (req: Request) {
   };
   minimizeThinking(model, params.config!);
 
-  console.log("Making Gemini request:", params);
+  console.log(
+    "=== Making Gemini request ===\n",
+    params,
+    "\n============================="
+  );
   const genAI = new GoogleGenAI({});
   const response = await genAI.models.generateContent(params);
 
@@ -28,10 +33,6 @@ export default async function (req: Request) {
     details: { thinking: params.config?.thinkingConfig },
   });
 }
-
-export const config = {
-  path: "/api/gemini",
-};
 
 function minimizeThinking(model: string, config: GenerateContentConfig) {
   const GEMINI_PRO_MIN_THINKING = 128;
@@ -42,11 +43,18 @@ function minimizeThinking(model: string, config: GenerateContentConfig) {
 
   if (supportsThinking) {
     const canDisable = !model.includes("pro");
-    console.log(
-      `minimizeThinking: ${model} supports thinking, canDisable: ${canDisable}`
-    );
     config.thinkingConfig = {
       thinkingBudget: canDisable ? 0 : GEMINI_PRO_MIN_THINKING,
     };
   }
 }
+
+export const config: Config = {
+  path: "/api/gemini",
+  // Max 30 requests per 60 seconds per client IP
+  rateLimit: {
+    windowLimit: 30,
+    windowSize: 60,
+    aggregateBy: ["ip", "domain"],
+  },
+};

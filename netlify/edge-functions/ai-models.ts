@@ -1,3 +1,5 @@
+import type { Config } from "@netlify/edge-functions";
+
 export default async function (request: Request) {
   try {
     // Fetch from Netlify AI Gateway API
@@ -22,6 +24,6 @@ export default async function (request: Request) {
   }
 }
 
-export const config = {
+export const config: Config = {
   path: '/api/ai-models'
 };

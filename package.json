@@ -7,9 +7,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "dev": "netlify dev",
     "lint": "eslint ."
   },
   "dependencies": {

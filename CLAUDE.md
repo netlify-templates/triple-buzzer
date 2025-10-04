@@ -8,16 +8,13 @@ Triple Buzzer - A Jeopardy!-style AI game
 ## Commands
 
 ### Development
+- **Update Netlify CLI**: `npm i -g netlify-cli@latest` (required for latest features)
 - **Install dependencies**: `npm install`
-- **Run dev server**: `npm run dev` - Starts Vite dev server (default: http://localhost:5173)
-- **Run with Netlify**: `netlify dev` - Starts local development server with serverless functions and edge functions
+- **Run dev server via Netlify CLI**: `npm run dev` - Starts local development server with serverless functions and edge functions (default: http://localhost:8888)
 - **Type checking**: `npx tsc --noEmit` - Check TypeScript errors without emitting files
 - **Lint**: `npm run lint` - Run ESLint on all TypeScript files
-- **Update Netlify CLI**: `npm i -g netlify-cli@latest` (required for latest features)
 
 ### Build & Deployment
-- **Build**: `npm run build` - Type check and build for production (outputs to `dist/`)
-- **Preview build**: `npm run preview` - Preview production build locally
 - Deploy to Netlify via Git push or Netlify CLI
 - Live demo: https://triple-buzzer.netlify.app
 

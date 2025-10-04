@@ -1,69 +1,72 @@
-import { useState, useCallback } from 'react'
-import type { Message, Provider } from '../types'
+import { useState, useCallback } from "react";
+import type { Message, Provider } from "../types";
 
 interface SendMessageParams {
-  message: string
-  providers: Array<{ provider: Provider; model: string }>
+  message: string;
+  providers: Array<{ provider: Provider; model: string }>;
 }
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const addMessage = useCallback((message: Message) => {
-    setMessages((prev) => [...prev, message])
-  }, [])
+    setMessages((prev) => [...prev, message]);
+  }, []);
 
-  const sendMessage = useCallback(async ({ message, providers }: SendMessageParams) => {
-    if (!message.trim() || providers.length === 0) return
+  const sendMessage = useCallback(
+    async ({ message, providers }: SendMessageParams) => {
+      if (!message.trim() || providers.length === 0) return;
 
-    addMessage({ content: message, type: 'user' })
-    setIsLoading(true)
+      addMessage({ content: message, type: "user" });
+      setIsLoading(true);
+      let pendingRequestCount = providers.length;
 
-    let pendingRequests = providers.length
+      providers.forEach(async ({ provider, model }) => {
+        const startTime = performance.now();
+        try {
+          const response = await fetch(`/api/${provider}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message, model }),
+          });
+          const responseTime = Math.round(performance.now() - startTime);
 
-    providers.forEach(async ({ provider, model }) => {
-      const startTime = performance.now()
+          if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error ${response.status}: ${errorMessage}`);
+          }
 
-      try {
-        const response = await fetch(`/api/${provider}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, model }),
-        })
+          const data = await response.json();
+          if (data.error) {
+            throw new Error(data.error);
+          }
 
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${await response.text()}`)
+          addMessage({
+            content: data.answer,
+            type: "assistant",
+            provider,
+            responseTime,
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error";
+          addMessage({
+            content: `Error from ${provider}: ${errorMessage}`,
+            type: "assistant",
+            provider,
+          });
+        } finally {
+          pendingRequestCount--;
+          // A production-grade app should also have a timeout :-)
+          if (pendingRequestCount === 0) {
+            setIsLoading(false);
+          }
         }
+      });
+    },
+    [addMessage]
+  );
 
-        const data = await response.json()
-
-        if (data.error) {
-          throw new Error(data.error)
-        }
-
-        const responseTime = Math.round(performance.now() - startTime)
-        addMessage({
-          content: data.answer,
-          type: 'assistant',
-          provider,
-          responseTime,
-        })
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        addMessage({
-          content: `Error from ${provider}: ${errorMessage}`,
-          type: 'assistant',
-          provider,
-        })
-      } finally {
-        pendingRequests--
-        if (pendingRequests === 0) {
-          setIsLoading(false)
-        }
-      }
-    })
-  }, [addMessage])
-
-  return { messages, isLoading, sendMessage }
+  return { messages, isLoading, sendMessage };
 }

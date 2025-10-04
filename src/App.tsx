@@ -2,14 +2,14 @@ import { useState, useCallback } from "react";
 import { ChatMessages } from "./components/ChatMessages";
 import { ProviderSelector } from "./components/ProviderSelector";
 import { ChatInput } from "./components/ChatInput";
-import { useModels } from "./hooks/useModels";
+import { useAvailableModels } from "./hooks/useAvailableModels";
 import { useChat } from "./hooks/useChat";
 import { Footer } from "./components/Footer";
 import type { Provider } from "./types";
 import "./index.css";
 
 export function App() {
-  const { models } = useModels();
+  const { models } = useAvailableModels();
   const { messages, isLoading, sendMessage } = useChat();
   const [selectedProviders, setSelectedProviders] = useState<
     Array<{ provider: Provider; model: string }>
@@ -38,8 +38,11 @@ export function App() {
       <div className="max-w-[900px] w-full card grow bg-base-100 lg:border-2 border-base-300 rounded-none lg:rounded-2xl overflow-hidden">
         <div className="card-body grow overflow-hidden p-2 lg:p-4">
           <ChatMessages messages={messages} />
-          { isLoading ? <LoadingIndicator /> : <ChatInput onSend={handleSend} disabled={isLoading} />}
-          
+          {isLoading ? (
+            <LoadingIndicator />
+          ) : (
+            <ChatInput onSend={handleSend} disabled={isLoading} />
+          )}
         </div>
         <ProviderSelector
           models={models}
@@ -58,5 +61,5 @@ function LoadingIndicator() {
       <div className="w-max text-nowrap">AI is typing</div>
       <progress className="progress grow h-6"></progress>
     </div>
-  )
+  );
 }

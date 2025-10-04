@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { EXAMPLE_QUESTIONS } from "../data/exampleQuestions";
 
-interface ChatInputProps {
+export function ChatInput(props: {
   onSend: (message: string) => void;
   disabled: boolean;
-}
-
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+}) {
+  const { onSend, disabled } = props;
   const [input, setInput] = useState(
     "This country borders Germany, Belgium, and the North Sea"
   );
@@ -38,22 +37,22 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       >
         <span className="text-4xl">🎲</span>
       </button>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          maxLength={500}
-          disabled={disabled}
-          className="input input-bordered grow join-item"
-        />
-        <button
-          onClick={handleSend}
-          disabled={disabled}
-          className="btn btn-primary uppercase join-item"
-        >
-          {disabled ? "Sending..." : "Send"}
-        </button>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyUp={handleKeyPress}
+        maxLength={500}
+        disabled={disabled}
+        className="input input-bordered grow join-item"
+      />
+      <button
+        onClick={handleSend}
+        disabled={disabled}
+        className="btn btn-primary uppercase join-item"
+      >
+        {disabled ? "Sending..." : "Send"}
+      </button>
     </div>
   );
 }

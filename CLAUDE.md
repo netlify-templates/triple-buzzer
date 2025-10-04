@@ -27,10 +27,10 @@ Triple Buzzer - A Jeopardy!-style AI game
 A Jeopardy!-style game that compares AI responses from three different models. Users provide an answer, and three AI models respond with questions in parallel.
 
 ### Technology Stack
-- **Frontend**: React 19.1.1 + TypeScript 5.9.2
-- **Build Tool**: Vite 7.1.7 with SWC plugin for fast compilation
-- **Styling**: Tailwind CSS v4.1.13 with `@tailwindcss/vite` plugin
-- **Linting**: ESLint 9.36.0 with flat config, TypeScript and React Hooks support
+- **Frontend**: React 19 + TypeScript 5.9.2+
+- **Build Tool**: Vite 7 with SWC plugin for fast compilation
+- **Styling**: Tailwind CSS v4 with `@tailwindcss/vite` plugin + DaisyUI v5
+- **Linting**: ESLint 9 with flat config, TypeScript and React Hooks support
 - **Backend**: Netlify serverless functions and edge functions (TypeScript)
 - **AI SDKs**:
   - OpenAI SDK (`openai`) - Uses new response API with reasoning minimization
@@ -41,31 +41,36 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 ```
 /
 ├── src/
-│   ├── components/       # React components
-│   │   ├── ChatHeader.tsx
-│   │   ├── ChatMessages.tsx
-│   │   ├── Message.tsx
-│   │   ├── ProviderSelector.tsx
-│   │   ├── ChatInput.tsx
-│   │   └── TypingIndicator.tsx
-│   ├── hooks/           # Custom React hooks
-│   │   ├── useModels.ts
-│   │   └── useChat.ts
-│   ├── data/            # Data and constants
-│   │   └── exampleQuestions.ts
-│   ├── types.ts         # TypeScript type definitions
-│   ├── index.css        # Tailwind CSS and custom styles
-│   ├── App.tsx          # Main App component
-│   ├── main.tsx         # React entry point
-│   └── vite-env.d.ts    # Vite type declarations
+│   ├── components/          # React components
+│   │   ├── ChatInput.tsx    # User input field with submit button
+│   │   ├── ChatMessages.tsx # Message list container
+│   │   ├── Footer.tsx       # App footer with random question button
+│   │   ├── SelectProviders.tsx  # Provider selection and model configuration
+│   │   └── SingleMessage.tsx    # Individual message display
+│   ├── hooks/              # Custom React hooks
+│   │   ├── useAvailableModels.ts  # Fetches available models from API
+│   │   └── useChat.ts             # Manages chat state and API calls
+│   ├── data/               # Data and constants
+│   │   └── exampleQuestions.ts    # Sample Jeopardy answers (30 questions)
+│   ├── types.ts            # TypeScript type definitions
+│   ├── index.css           # Tailwind CSS, DaisyUI config, and custom styles
+│   ├── App.tsx             # Main App component
+│   ├── main.tsx            # React entry point
+│   └── vite-env.d.ts       # Vite type declarations
 ├── netlify/
-│   ├── functions/       # Serverless functions
-│   └── edge-functions/  # Edge functions
-├── index.html           # Vite entry HTML
-├── vite.config.js       # Vite configuration
-├── tsconfig.json        # TypeScript configuration
-├── eslint.config.js     # ESLint flat config
-└── netlify.toml         # Netlify build configuration
+│   ├── functions/          # Serverless functions
+│   │   ├── openai.ts       # OpenAI API handler
+│   │   ├── anthropic.ts    # Anthropic API handler
+│   │   ├── gemini.ts       # Gemini API handler
+│   │   └── utils/
+│   │       └── common.ts   # Shared validation and constants
+│   └── edge-functions/     # Edge functions
+│       └── list-models.ts  # Returns available models by provider
+├── index.html              # Vite entry HTML
+├── vite.config.js          # Vite configuration
+├── tsconfig.json           # TypeScript configuration
+├── eslint.config.js        # ESLint flat config
+└── netlify.toml            # Netlify build configuration
 ```
 
 ### Functions Structure
@@ -74,9 +79,9 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 - `openai.ts` - OpenAI endpoint with reasoning minimization for supported models
 - `anthropic.ts` - Anthropic endpoint with strict token limits
 - `gemini.ts` - Gemini endpoint with thinking budget optimization
-- `common.ts` - Shared utilities including:
-  - `SYSTEM_PROMPT`: Standardized Jeopardy contestant prompt
-  - `validate()`: Unified API key and request body validation
+- `utils/common.ts` - Shared utilities including:
+  - `SYSTEM_PROMPT`: Standardized Jeopardy contestant prompt ("You are a Jeopardy! contestant. Answer very concisely in the form of a question, with no further explanations.")
+  - `validate()`: Unified API key and request body validation function
 
 #### Edge Functions (`netlify/edge-functions/`)
 - `list-models.ts` - Fetches available models from Netlify AI Gateway API
@@ -96,41 +101,36 @@ All AI endpoints require:
 - Body: `{ message: string, model: string }` (both fields required)
 - Response: `{ answer: string, details?: object }`
 
-### Environment Variables
-Automatically set when using Netlify's AI Gateway on credit-based plans. Otherwise, manually set:
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `GEMINI_API_KEY`
-
 ### Frontend Features
 React single-page application with:
 - **Component-based architecture**: Modular, reusable React components
-- **Custom hooks**: `useModels` for fetching AI models, `useChat` for message handling
+- **Custom hooks**: `useAvailableModels` for fetching AI models, `useChat` for message handling
 - **Type safety**: Full TypeScript coverage with strict mode enabled
 - **Dynamic model selection**: Fetches available models from `/api/list-models` on load
-- **Provider selection**: Toggle and configure OpenAI, Anthropic, and Gemini
-- **Random examples**: 30 sample questions accessible via 🎲 button
+- **Provider selection**: Toggle and configure OpenAI, Anthropic, and Gemini via `SelectProviders` component
+- **Random examples**: 30 sample Jeopardy answers accessible via 🎲 button in footer
 - **Parallel requests**: Sends to all selected providers simultaneously
 - **Response timing**: Displays response times in milliseconds
-- **Provider badges**: Color-coded badges for each AI provider
-- **Responsive design**: Mobile-friendly layout with breakpoints
+- **Provider-specific styling**: Color-coded gradients for each AI provider
+- **DaisyUI components**: Uses DaisyUI for buttons, selects, and layout components
+- **Responsive design**: Mobile-friendly layout with DaisyUI's responsive utilities
 
 ### Model Selection Logic
-- Default models: see `DEFAULT_MODELS` in `ProviderSelector` component
-- Models fetched dynamically from Netlify AI Gateway
+- Models fetched dynamically from Netlify AI Gateway via `useAvailableModels` hook
+- Default models are defined in `SelectProviders` component
 - All three providers enabled by default
-- User can toggle providers and select models per provider
+- User can toggle providers on/off and select different models per provider
 - Model selections persisted in component state
+- Provider state managed via `ProviderSettings` interface
 
 ### Styling Architecture
 - **Tailwind CSS v4**: Uses new `@import "tailwindcss"` syntax in `index.css`
-- **Custom CSS Classes**: Reusable classes for gradients, colors, and buttons
-  - `.gradient-primary`: Main app gradient (indigo blue)
-  - `.gradient-openai`, `.gradient-anthropic`, `.gradient-gemini`: Provider-specific gradients
-  - `.text-gold`: Gold text color (#ffd700)
-  - `.btn-primary`: Primary button style with hover effects
-- **Responsive Design**: Mobile-first with breakpoints at 480px, 768px, 1060px, 1280px
-- **Utility-First**: Combines Tailwind utilities with custom classes for maintainability
+- **DaisyUI v5**: Component library with customized "cupcake" theme configuration
+  - Custom color scheme defined in `@plugin "daisyui/theme"` block
+  - Custom border radius, sizing, and depth settings
+  - Dark mode enabled with `prefersdark: true`
+- **Responsive Design**: Uses DaisyUI's responsive utilities and Tailwind breakpoints (lg, etc.)
+- **Component Styling**: Leverages DaisyUI classes like `btn`, `select`, `join`, `join-item`
 
 ### TypeScript Configuration
 - Uses `@tsconfig/vite-react` as base configuration

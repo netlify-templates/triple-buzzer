@@ -18,10 +18,4 @@ export type Message =
       responseTime?: number;
     };
 
-export interface ProviderSettings {
-  provider: Provider;
-  enabled: boolean;
-  model: string;
-}
-
 export type ModelsByProvider = Record<Provider, string[]>;

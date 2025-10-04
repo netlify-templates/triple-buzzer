@@ -51,7 +51,7 @@ export function ChatInput(props: {
         disabled={disabled}
         className="btn btn-primary uppercase join-item"
       >
-        {disabled ? "Sending..." : "Send"}
+        Send
       </button>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { ChatMessages } from "./components/ChatMessages";
-import { ProviderSelector } from "./components/ProviderSelector";
+import { SelectProviders } from "./components/SelectProviders";
 import { ChatInput } from "./components/ChatInput";
 import { useAvailableModels } from "./hooks/useAvailableModels";
 import { useChat } from "./hooks/useChat";
@@ -11,20 +11,20 @@ import "./index.css";
 export function App() {
   const { models } = useAvailableModels();
   const { messages, isLoading, sendMessage } = useChat();
-  const [selectedProviders, setSelectedProviders] = useState<
+  const [enabledProviders, setEnabledProviders] = useState<
     Array<{ provider: Provider; model: string }>
   >([]);
 
   // TODO disable sending if no providers selected
   const handleSend = useCallback(
     (message: string) => {
-      if (selectedProviders.length === 0) {
+      if (enabledProviders.length === 0) {
         alert("Please select at least one provider");
         return;
       }
-      sendMessage({ message, providers: selectedProviders });
+      sendMessage({ message, providers: enabledProviders });
     },
-    [selectedProviders, sendMessage]
+    [enabledProviders, sendMessage]
   );
 
   return (
@@ -41,13 +41,13 @@ export function App() {
           {isLoading ? (
             <LoadingIndicator />
           ) : (
-            <ChatInput onSend={handleSend} disabled={isLoading} />
+            <ChatInput
+              onSend={handleSend}
+              disabled={isLoading || enabledProviders.length === 0}
+            />
           )}
         </div>
-        <ProviderSelector
-          models={models}
-          onSelectionChange={setSelectedProviders}
-        />
+        <SelectProviders models={models} onChange={setEnabledProviders} />
       </div>
 
       <Footer />

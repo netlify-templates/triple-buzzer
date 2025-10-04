@@ -22,7 +22,7 @@ export function Footer() {
         className="btn btn-sm btn-ghost uppercase"
       >
         <svg className="w-6 h-6" viewBox="0 0 128 113">
-          <g clip-path="url(#clip0_236_179)">
+          <g clipPath="url(#clip0_236_179)">
             <path
               d="M34.593 94.2052H33.3844L27.3514 88.1722V86.9637L36.5743 77.7409H42.9639L43.8158 78.5928V84.9824L34.593 94.2052Z"
               fill="#181A1C"

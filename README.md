@@ -67,7 +67,9 @@ Now that the CLI knows which Netlify project is associated with your code, you c
 
 #### Running the site
 
-Run `netlify dev`. 
+Run `npm run dev`.
+
+This starts `netlify dev`, which wraps the Vite dev server.
 
 The browser should automatically open up showing your local dev server at `http://localhost:8888`.
 
@@ -76,7 +78,6 @@ The browser should automatically open up showing your local dev server at `http:
 If you get errors trying to send your prompts, please make sure again that:
 * You have a credits-based plan on Netlify
 * That you have run `netlify init` to create a Netlify project for your code.
-* That you're running locally via `netlify dev`.
 
 ## API Endpoints
 

@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
-import { Config } from "@netlify/functions";
+import type { Config } from "@netlify/functions";
 
 const MAX_OUTPUT_TOKENS = 16; // Anthropic requires max tokens (and tends to be chatty)
 

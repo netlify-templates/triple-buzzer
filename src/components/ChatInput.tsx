@@ -4,8 +4,9 @@ import { EXAMPLE_QUESTIONS } from "../data/exampleQuestions";
 export function ChatInput(props: {
   onSend: (message: string) => void;
   disabled: boolean;
+  visible: boolean;
 }) {
-  const { onSend, disabled } = props;
+  const { onSend, disabled, visible } = props;
   const [input, setInput] = useState(
     "This country borders Germany, Belgium, and the North Sea"
   );
@@ -29,7 +30,7 @@ export function ChatInput(props: {
   };
 
   return (
-    <div className="flex w-full join">
+    <div className={ visible ? "flex w-full join " : "hidden" }>
       <button
         onClick={handleRandom}
         disabled={disabled}

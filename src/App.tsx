@@ -38,14 +38,12 @@ export function App() {
       <div className="max-w-[900px] w-full card grow bg-base-100 lg:border-2 border-base-300 rounded-none lg:rounded-2xl overflow-hidden">
         <div className="card-body grow overflow-hidden p-2 lg:p-4">
           <ChatMessages messages={messages} />
-          {isLoading ? (
-            <LoadingIndicator />
-          ) : (
-            <ChatInput
-              onSend={handleSend}
-              disabled={isLoading || enabledProviders.length === 0}
-            />
-          )}
+          {isLoading && <LoadingIndicator />}
+          <ChatInput
+            visible={!isLoading}
+            disabled={isLoading || enabledProviders.length === 0}
+            onSend={handleSend}
+          />
         </div>
         <SelectProviders models={models} onChange={setEnabledProviders} />
       </div>

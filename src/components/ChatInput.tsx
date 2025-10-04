@@ -30,8 +30,14 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="join w-full">
+    <div className="flex w-full join">
+      <button
+        onClick={handleRandom}
+        disabled={disabled}
+        className="btn btn-netural uppercase join-item"
+      >
+        <span className="text-4xl">🎲</span>
+      </button>
         <input
           type="text"
           value={input}
@@ -39,24 +45,15 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           onKeyPress={handleKeyPress}
           maxLength={500}
           disabled={disabled}
-          className="input input-bordered join-item flex-1"
+          className="input input-bordered grow join-item"
         />
         <button
           onClick={handleSend}
           disabled={disabled}
-          className="btn btn-primary join-item"
+          className="btn btn-primary uppercase join-item"
         >
           {disabled ? "Sending..." : "Send"}
         </button>
-      </div>
-      <button
-        onClick={handleRandom}
-        disabled={disabled}
-        title="Get random example"
-        className="btn btn-primary join-item text-2xl"
-      >
-        🎲
-      </button>
     </div>
   );
 }

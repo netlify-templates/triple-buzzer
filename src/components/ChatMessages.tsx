@@ -1,12 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import type { Message as MessageType } from '../types'
 import { Message } from './Message'
 
 interface ChatMessagesProps {
-  messages: MessageType[]
+  messages: MessageType[];
+  children?: ReactNode;
 }
 
-export function ChatMessages({ messages }: ChatMessagesProps) {
+export function ChatMessages({ messages, children }: ChatMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -14,23 +15,20 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
   }, [messages])
 
   return (
-    <div className="flex grow max-h-full
- flex-col gap-4 overflow-y-auto rounded border-base-300 border p-4">
+    <div className="flex grow h-full max-h-full
+ flex-col gap-4 overflow-y-auto">
       {messages.length === 0 ? (
         <div className='flex flex-col grow justify-center items-center gap-4'>
-          <div className="text-lg text-center">
-            Welcome to Triple Buzzer, a Netlify AI game! Give me an answer and I'll respond with
-            the correct question.
-          </div>
-          <div className="text-md text-center">
-            Remember when IBM Watson went on Jeopardy!? Well, this is nothing like that because we
-            hold neither of those copyrights.
+          <div className="text-center flex flex-col gap-2">
+            <span className="text-xl lg:text-2xl font-semibold">Welcome to Triple Buzzer!</span>
+            <span className="text-lg lg:text-xl">Give me an answer and I'll respond with the correct question.</span>
           </div>
         </div>
       ) : (
         messages.map((message, index) => <Message key={index} message={message} />)
       )}
       <div ref={messagesEndRef} />
+      {children}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages.mjs";
+import type { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages";
 import { SYSTEM_PROMPT, validate } from "./utils/common";
 import { Config } from "@netlify/functions";
 

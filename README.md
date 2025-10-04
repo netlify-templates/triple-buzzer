@@ -35,3 +35,6 @@ If you're not using the Netlify CLI or deploying to Netlify, or if you're not us
 - `/api/ai-models` - Edge function for fetching available models
 
 Built with Netlify Functions and vanilla HTML/CSS/JS.
+
+Creat Lawd-STAR
+Lab, Because of you.

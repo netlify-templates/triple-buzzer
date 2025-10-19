@@ -3,7 +3,7 @@ import type { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resource
 import { SYSTEM_PROMPT, validate } from "./utils/common";
 import type { Config } from "@netlify/functions";
 
-const MAX_OUTPUT_TOKENS = 16; // Anthropic requires max tokens (and tends to be chatty)
+const MAX_OUTPUT_TOKENS = 20; // Anthropic requires max tokens (and tends to be chatty)
 
 export default async function (req: Request) {
   const validatedRequest = await validate("ANTHROPIC_API_KEY", req);

@@ -14,7 +14,7 @@ const defaultState: AllProvidersState = {
   anthropic: {
     provider: "anthropic",
     enabled: true,
-    model: "claude-3-5-haiku-latest",
+    model: "claude-haiku-4-5-20251001",
   },
   gemini: { provider: "gemini", enabled: true, model: "gemini-flash-latest" },
 };

@@ -10,7 +10,7 @@ Triple Buzzer - A Jeopardy!-style AI game
 ### Development
 - **Update Netlify CLI**: `npm i -g netlify-cli@latest` (required for latest features)
 - **Install dependencies**: `npm install`
-- **Run dev server via Netlify CLI**: `npm run dev` - Starts local development server with serverless functions and edge functions (default: http://localhost:8888)
+- **Run dev server via Netlify CLI**: `npm run dev` - Starts local development server with serverless functions (default: http://localhost:8888)
 - **Type checking**: `npx tsc --noEmit` - Check TypeScript errors without emitting files
 - **Lint**: `npm run lint` - Run ESLint on all TypeScript files
 
@@ -28,7 +28,7 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 - **Build Tool**: Vite 7 with SWC plugin for fast compilation
 - **Styling**: Tailwind CSS v4 with `@tailwindcss/vite` plugin + DaisyUI v5
 - **Linting**: ESLint 9 with flat config, TypeScript and React Hooks support
-- **Backend**: Netlify serverless functions and edge functions (TypeScript)
+- **Backend**: Netlify serverless functions (TypeScript)
 - **AI SDKs**:
   - OpenAI SDK (`openai`) - Uses new response API with reasoning minimization
   - Anthropic SDK (`@anthropic-ai/sdk`) - Limited to 16 max tokens for concise responses
@@ -45,7 +45,7 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 │   │   ├── SelectProviders.tsx  # Provider selection and model configuration
 │   │   └── SingleMessage.tsx    # Individual message display
 │   ├── hooks/              # Custom React hooks
-│   │   ├── useAvailableModels.ts  # Fetches available models from API
+│   │   ├── useAvailableModels.ts  # Fetches available models from Netlify AI Gateway
 │   │   └── useChat.ts             # Manages chat state and API calls
 │   ├── data/               # Data and constants
 │   │   └── exampleQuestions.ts    # Sample Jeopardy answers (30 questions)
@@ -55,14 +55,12 @@ A Jeopardy!-style game that compares AI responses from three different models. U
 │   ├── main.tsx            # React entry point
 │   └── vite-env.d.ts       # Vite type declarations
 ├── netlify/
-│   ├── functions/          # Serverless functions
-│   │   ├── openai.ts       # OpenAI API handler
-│   │   ├── anthropic.ts    # Anthropic API handler
-│   │   ├── gemini.ts       # Gemini API handler
-│   │   └── utils/
-│   │       └── common.ts   # Shared validation and constants
-│   └── edge-functions/     # Edge functions
-│       └── list-models.ts  # Returns available models by provider
+│   └── functions/          # Serverless functions
+│       ├── openai.ts       # OpenAI API handler
+│       ├── anthropic.ts    # Anthropic API handler
+│       ├── gemini.ts       # Gemini API handler
+│       └── utils/
+│           └── common.ts   # Shared validation and constants
 ├── index.html              # Vite entry HTML
 ├── vite.config.js          # Vite configuration
 ├── tsconfig.json           # TypeScript configuration
@@ -80,17 +78,11 @@ A Jeopardy!-style game that compares AI responses from three different models. U
   - `SYSTEM_PROMPT`: Standardized Jeopardy contestant prompt ("You are a Jeopardy! contestant. Answer very concisely in the form of a question, with no further explanations.")
   - `validate()`: Unified API key and request body validation function
 
-#### Edge Functions (`netlify/edge-functions/`)
-- `list-models.ts` - Fetches available models from Netlify AI Gateway API
-  - Path: `/api/list-models`
-  - Returns model lists by provider (openai, anthropic, gemini)
-
 ### API Endpoints
 All function endpoints are prefixed with `/api`:
 - `/api/openai` - OpenAI function
 - `/api/anthropic` - Anthropic function
 - `/api/gemini` - Gemini function
-- `/api/list-models` - Model listing edge function
 
 ### Request/Response Format
 All AI endpoints require:
@@ -103,7 +95,7 @@ React single-page application with:
 - **Component-based architecture**: Modular, reusable React components
 - **Custom hooks**: `useAvailableModels` for fetching AI models, `useChat` for message handling
 - **Type safety**: Full TypeScript coverage with strict mode enabled
-- **Dynamic model selection**: Fetches available models from `/api/list-models` on load
+- **Dynamic model selection**: Fetches available models directly from Netlify AI Gateway API
 - **Provider selection**: Toggle and configure OpenAI, Anthropic, and Gemini via `SelectProviders` component
 - **Random examples**: 30 sample Jeopardy answers accessible via 🎲 button in footer
 - **Parallel requests**: Sends to all selected providers simultaneously

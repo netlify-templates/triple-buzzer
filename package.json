@@ -14,13 +14,13 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
     "@google/genai": "^1.21.0",
+    "@netlify/edge-functions": "^3.0.0",
+    "@netlify/functions": "^5.0.0",
     "@tailwindcss/vite": "^4.1.13",
     "openai": "^5.23.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.13",
-    "@netlify/edge-functions": "^2.18.2",
-    "@netlify/functions": "^4.2.7"
+    "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

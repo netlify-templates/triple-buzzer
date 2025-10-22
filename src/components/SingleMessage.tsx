@@ -11,7 +11,7 @@ export function SingleMessage({ message }: { message: Message }) {
     : "";
   const bubbleStyles =
     "chat-bubble rounded-xl text-[16px] " +
-    (isProviderMessage ? "chat-bubble-warning" : "chat-bubble-info");
+    (isProviderMessage ? "chat-bubble-warning rounded-bl-none" : "chat-bubble-info rounded-br-none");
 
   return (
     <div className={lineStyles}>
